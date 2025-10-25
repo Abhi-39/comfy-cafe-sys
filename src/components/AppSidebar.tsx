@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
 const menuItems = [
-  { title: "Dashboard", url: "/", icon: Home },
+  { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "Orders", url: "/orders", icon: ShoppingCart },
   { title: "Menu", url: "/menu", icon: MenuSquare },
   { title: "Tables", url: "/tables", icon: Coffee },

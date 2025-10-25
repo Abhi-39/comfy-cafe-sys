@@ -22,7 +22,7 @@ const Layout = ({ children }: LayoutProps) => {
         setSession(session);
         setUser(session?.user ?? null);
         
-        if (!session) {
+        if (!session && window.location.pathname !== "/") {
           navigate("/auth");
         }
       }
@@ -34,7 +34,7 @@ const Layout = ({ children }: LayoutProps) => {
       setUser(session?.user ?? null);
       setLoading(false);
       
-      if (!session) {
+      if (!session && window.location.pathname !== "/") {
         navigate("/auth");
       }
     });
