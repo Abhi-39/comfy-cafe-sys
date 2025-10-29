@@ -99,7 +99,7 @@ npm run preview
 For initial access to the admin dashboard:
 
 - **Email**: `cafemanager123@gmail.com`
-- **Password**: `1234567890`
+- **Password**: `123456789`
 
 ⚠️ **Security Note**: Change these credentials in production environments.
 
