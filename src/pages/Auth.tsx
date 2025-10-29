@@ -19,21 +19,47 @@ const Auth = () => {
 
   useEffect(() => {
     // Check if user is already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session) {
-        navigate("/customer");
+        await redirectBasedOnRole(session.user.id);
       }
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session) {
-        navigate("/customer");
+        await redirectBasedOnRole(session.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const redirectBasedOnRole = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .single();
+
+      if (error) {
+        console.error("Error fetching user role:", error);
+        navigate("/customer");
+        return;
+      }
+
+      // Redirect based on role
+      if (data.role === "admin" || data.role === "staff") {
+        navigate("/dashboard");
+      } else {
+        navigate("/customer");
+      }
+    } catch (error) {
+      console.error("Error in redirectBasedOnRole:", error);
+      navigate("/customer");
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,7 +92,7 @@ const Auth = () => {
         data: {
           full_name: fullName,
         },
-        emailRedirectTo: `${window.location.origin}/customer`,
+        emailRedirectTo: `${window.location.origin}/auth`,
       },
     });
 

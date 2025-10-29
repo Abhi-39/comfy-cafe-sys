@@ -24,6 +24,9 @@ const Layout = ({ children }: LayoutProps) => {
         
         if (!session && window.location.pathname !== "/") {
           navigate("/auth");
+        } else if (session) {
+          // Verify user has admin/staff role
+          checkUserRole(session.user.id);
         }
       }
     );
@@ -36,11 +39,37 @@ const Layout = ({ children }: LayoutProps) => {
       
       if (!session && window.location.pathname !== "/") {
         navigate("/auth");
+      } else if (session) {
+        checkUserRole(session.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const checkUserRole = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .single();
+
+      if (error || !data) {
+        console.error("Error fetching user role:", error);
+        navigate("/customer");
+        return;
+      }
+
+      // Only allow admin and staff to access dashboard
+      if (data.role !== "admin" && data.role !== "staff") {
+        navigate("/customer");
+      }
+    } catch (error) {
+      console.error("Error checking user role:", error);
+      navigate("/customer");
+    }
+  };
 
   if (loading) {
     return (
